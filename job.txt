@@ -1,0 +1,77 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Collections.Specialized;
+using System.Net;
+using Newtonsoft.Json.Linq;
+
+namespace ChartStatistics
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            var readLine = Console.ReadLine();
+
+
+            byte[] response;
+
+            using (WebClient client = new WebClient())
+            {
+                // Post iþlemini yapmak isteðimiz url bilgisini giriyoruz.
+                string postUrl = "http://www.fxibsignals.com/api/tools/pairboard.json";
+
+                response = client.UploadValues(postUrl, new NameValueCollection()
+                {
+                 { "device_id", "fe88e9c0-fd46-4305-9a39-75bb287c6109" },
+                 { "group", "7" }
+                });
+
+            }
+
+
+
+            string result = System.Text.Encoding.UTF8.GetString(response);
+
+
+            Chart results = Newtonsoft.Json.JsonConvert.DeserializeObject<Chart>(result);
+
+            var audcad = results.Data.pairs[0];
+
+
+            Console.Read();
+
+
+           
+
+
+
+        }
+    }
+
+
+    public class Chart
+    {
+        [JsonProperty("data")]
+        public Data Data { get; set; }
+    }
+
+    public class Pair
+    {
+        [JsonProperty("title")]
+        public string title { get; set; }
+        [JsonProperty("bid")]
+        public double bid { get; set; }
+    }
+
+    public class Data
+    {
+        [JsonProperty("pairs")]
+        public List<Pair> pairs { get; set; }
+    }
+
+
